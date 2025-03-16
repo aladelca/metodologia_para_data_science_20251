@@ -41,7 +41,14 @@ repos:
     rev: v1.3.0
     hooks:
     -   id: mypy
-        additional_dependencies: [types-all]
+        additional_dependencies: [
+            'types-PyYAML',
+            'types-requests',
+            'types-setuptools',
+            'types-python-dateutil',
+            'pandas-stubs',
+            'types-numpy'
+        ]
 
 -   repo: local
     hooks:

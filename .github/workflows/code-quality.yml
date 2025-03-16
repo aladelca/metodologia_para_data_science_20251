@@ -21,7 +21,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-        pip install pre-commit pytest pytest-cov
+        pip install pre-commit pytest pytest-cov mypy types-PyYAML types-requests types-setuptools types-python-dateutil pandas-stubs types-numpy
         
     - name: Run pre-commit hooks
       run: |
@@ -43,7 +43,6 @@ jobs:
 
   dependency-review:
     runs-on: ubuntu-latest
-    # Solo ejecutar en pull requests
     if: github.event_name == 'pull_request'
     steps:
       - name: 'Checkout Repository'
@@ -56,7 +55,6 @@ jobs:
 
   validate-pipeline:
     runs-on: ubuntu-latest
-    # Modificamos las dependencias para que no espere por dependency-review en pushes
     needs: [code-quality]
     steps:
     - uses: actions/checkout@v3
@@ -73,5 +71,4 @@ jobs:
         
     - name: Run validation pipeline
       run: |
-        # Este script debe existir y ejecutar el pipeline completo
         python src/utils/validate_pipeline.py 

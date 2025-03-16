@@ -32,16 +32,49 @@ def validate_data_availability():
     # This will be implemented when we define our data requirements
     return True
 
-def validate_model_dependencies():
-    """Validate that all required model dependencies are available."""
-    required_packages = [
-        "numpy",
-        "pandas",
-        "scikit-learn",
-        "tensorflow",
-        "torch"
-    ]
+def _parse_requirements(requirements_path):
+    """Parse requirements.txt file and extract package names."""
+    packages = []
+    # Mapping de nombres de paquetes a nombres de módulos
+    package_to_module = {
+        'beautifulsoup4': 'bs4',
+        'scikit-learn': 'sklearn',
+        'pandas-datareader': 'pandas_datareader',
+        'python-dotenv': 'dotenv'
+    }
     
+    # Paquetes a ignorar (herramientas de desarrollo)
+    ignore_packages = {
+        'pre-commit', 'black', 'flake8', 'isort', 'mypy',
+        'pytest', 'pytest-cov', 'types-PyYAML', 'types-requests',
+        'types-setuptools', 'types-python-dateutil', 'pandas-stubs'
+    }
+    
+    with open(requirements_path, 'r') as f:
+        for line in f:
+            line = line.strip()
+            # Skip empty lines, comments and version specifiers
+            if not line or line.startswith('#') or line.startswith('-'):
+                continue
+            # Extract package name without version
+            package = line.split('>=')[0].split('<=')[0].split('==')[0].strip()
+            # Skip development tools and type stubs
+            if package not in ignore_packages and not package.startswith('types-') and not package.endswith('-stubs'):
+                # Use the module name if it exists in the mapping, otherwise use the package name
+                module_name = package_to_module.get(package, package)
+                packages.append(module_name)
+    return packages
+
+def validate_model_dependencies():
+    """Validate that all required dependencies are available."""
+    src_dir = Path(__file__).parent.parent.parent
+    requirements_path = src_dir / "requirements.txt"
+    
+    if not requirements_path.exists():
+        print("Error: requirements.txt not found")
+        return False
+        
+    required_packages = _parse_requirements(requirements_path)
     import importlib
     
     for package in required_packages:

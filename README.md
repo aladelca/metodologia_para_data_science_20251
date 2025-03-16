@@ -58,6 +58,29 @@ El proyecto se centra en desarrollar una estrategia de inversión óptima para f
    pip install -r requirements.txt
    ```
 
+4. Configurar pre-commit hooks (IMPORTANTE):
+   ```bash
+   # Instalar pre-commit
+   pip install pre-commit
+
+   # Instalar los hooks en el repositorio
+   pre-commit install
+
+   # Verificar la instalación
+   pre-commit --version
+
+   # (Opcional) Ejecutar los hooks manualmente
+   pre-commit run --all-files
+   ```
+
+   Los hooks se ejecutarán automáticamente en cada commit e incluyen:
+   - Formateo de código (Black)
+   - Verificación de estilo (Flake8)
+   - Ordenamiento de imports (isort)
+   - Verificación de tipos (mypy)
+   - Ejecución de tests (pytest)
+   - Verificación de dependencias
+
 ## Flujo de Trabajo con Git
 
 1. Crear una nueva rama para tu trabajo:

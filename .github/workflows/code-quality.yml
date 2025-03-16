@@ -21,7 +21,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-        pip install pre-commit pytest pytest-cov mypy types-PyYAML types-requests types-setuptools types-python-dateutil pandas-stubs types-numpy
+        pip install pre-commit pytest pytest-cov mypy types-PyYAML types-requests types-setuptools types-python-dateutil pandas-stubs
         
     - name: Run pre-commit hooks
       run: |

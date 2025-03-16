@@ -1,0 +1,38 @@
+name: Branch Protection and PR Review Requirements
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - main
+
+jobs:
+  check-branch-protection:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if push is to main
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          if [ "${{ github.actor }}" != "aladelca" ]; then
+            echo "❌ Only aladelca can push directly to main"
+            exit 1
+          fi
+
+  enforce-review-requirements:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Check PR approval
+        run: |
+          # Get PR review states
+          REVIEWS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/reviews")
+          
+          # Check if aladelca has approved
+          APPROVED=$(echo $REVIEWS | jq -r '.[] | select(.user.login == "aladelca" and .state == "APPROVED")')
+          
+          if [ -z "$APPROVED" ]; then
+            echo "❌ PR must be approved by aladelca"
+            exit 1
+          fi 

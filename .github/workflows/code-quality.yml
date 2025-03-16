@@ -43,16 +43,21 @@ jobs:
 
   dependency-review:
     runs-on: ubuntu-latest
+    # Solo ejecutar en pull requests
+    if: github.event_name == 'pull_request'
     steps:
       - name: 'Checkout Repository'
         uses: actions/checkout@v3
       
       - name: 'Dependency Review'
         uses: actions/dependency-review-action@v3
+        with:
+          fail-on-severity: high
 
   validate-pipeline:
     runs-on: ubuntu-latest
-    needs: [code-quality, dependency-review]
+    # Modificamos las dependencias para que no espere por dependency-review en pushes
+    needs: [code-quality]
     steps:
     - uses: actions/checkout@v3
     

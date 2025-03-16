@@ -1,14 +1,15 @@
-"""Script to generate educational Jupyter notebooks."""
+"""Functions to generate educational Jupyter notebooks."""
 
 from pathlib import Path
-from notebook_generator import create_notebook, markdown_cell, code_cell
+from utils.notebook_generator import create_notebook, markdown_cell, code_cell
 
 def generate_basic_concepts():
     """Generate notebook about basic Python concepts."""
     cells = [
         markdown_cell("""# Conceptos Básicos de Python
 
-Este notebook introduce los conceptos fundamentales de Python que necesitarás para el análisis de datos y machine learning.
+Este notebook introduce los conceptos fundamentales de Python que necesitarás para el 
+análisis de datos y machine learning.
 
 ## Contenido
 1. Variables y Tipos de Datos
@@ -18,7 +19,8 @@ Este notebook introduce los conceptos fundamentales de Python que necesitarás p
         
         markdown_cell("""## 1. Variables y Tipos de Datos
 
-Python es un lenguaje de tipado dinámico, lo que significa que no necesitas declarar el tipo de una variable explícitamente."""),
+Python es un lenguaje de tipado dinámico, lo que significa que no necesitas declarar el 
+tipo de una variable explícitamente."""),
         
         code_cell("""# Tipos numéricos
 entero = 42
@@ -152,7 +154,8 @@ Este notebook cubre las estructuras de control fundamentales en Python.
         
         markdown_cell("""## 1. Condicionales
 
-Las estructuras condicionales permiten ejecutar diferentes bloques de código según se cumplan ciertas condiciones."""),
+Las estructuras condicionales permiten ejecutar diferentes bloques de código según se 
+cumplan ciertas condiciones."""),
         
         code_cell("""# Ejemplo básico de if
 edad = 18
@@ -250,7 +253,8 @@ def generate_functions():
     cells = [
         markdown_cell("""# Funciones en Python
 
-Este notebook explora el uso de funciones en Python, una herramienta fundamental para la organización y reutilización de código.
+Este notebook explora el uso de funciones en Python, una herramienta fundamental para la 
+organización y reutilización de código.
 
 ## Contenido
 1. Definición y Llamada de Funciones
@@ -380,7 +384,8 @@ def generate_classes():
     cells = [
         markdown_cell("""# Clases y Programación Orientada a Objetos en Python
 
-Este notebook explora los conceptos fundamentales de la Programación Orientada a Objetos (POO) en Python.
+Este notebook explora los conceptos fundamentales de la Programación Orientada a Objetos 
+(POO) en Python.
 
 ## Contenido
 1. Definición de Clases
@@ -654,7 +659,10 @@ Podemos crear nuestras propias clases de excepciones."""),
     def __init__(self, saldo, cantidad):
         self.saldo = saldo
         self.cantidad = cantidad
-        self.mensaje = f"No hay suficiente saldo. Saldo: {saldo}€, Cantidad solicitada: {cantidad}€"
+        self.mensaje = (
+            f"No hay suficiente saldo. "
+            f"Saldo: {saldo}€, Cantidad solicitada: {cantidad}€"
+        )
         super().__init__(self.mensaje)
 
 class CuentaBancaria:
@@ -686,7 +694,8 @@ def generate_code_standards():
     # Introduction
     cells.append(markdown_cell("""# Estándares de Código en Python
 
-Este notebook explora las mejores prácticas y estándares para escribir código Python de alta calidad."""))
+Este notebook explora las mejores prácticas y estándares para escribir código Python de 
+alta calidad."""))
 
     # PEP 8 section
     cells.append(markdown_cell("""## 1. PEP 8 - Guía de Estilo

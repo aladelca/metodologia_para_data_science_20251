@@ -265,3 +265,7 @@ El proyecto sigue una estructura de testing organizada:
 
 Para dudas o consultas, contactar al instructor:
 - GitHub: [@aladelca](https://github.com/aladelca)
+
+## Documentación
+
+- [Guía de Validaciones](VALIDATIONS.md): Documentación detallada sobre las validaciones del proyecto y cómo pasarlas.

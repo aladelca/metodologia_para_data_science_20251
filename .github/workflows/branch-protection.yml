@@ -28,11 +28,11 @@ jobs:
           # Get PR review states
           REVIEWS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/reviews")
-          
+
           # Check if aladelca has approved
           APPROVED=$(echo $REVIEWS | jq -r '.[] | select(.user.login == "aladelca" and .state == "APPROVED")')
-          
+
           if [ -z "$APPROVED" ]; then
             echo "❌ PR must be approved by aladelca"
             exit 1
-          fi 
+          fi

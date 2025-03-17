@@ -222,3 +222,4 @@ tensorboard/
 .Trashes
 ehthumbs.db
 Thumbs.db
+.*pdf

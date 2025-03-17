@@ -177,7 +177,7 @@ git remote -v
 
 2. **Mensajes de commit**: Usa mensajes claros y descriptivos que expliquen el "qué" y el "por qué" de los cambios.
 
-3. **Ramas**: 
+3. **Ramas**:
    - `main` o `master`: Código en producción
    - `feature/`: Para nuevas características
    - `hotfix/`: Para correcciones urgentes
@@ -230,4 +230,4 @@ git commit -m "Cambios movidos a nueva rama"
 
 ---
 
-Recuerda que esta es una guía básica. Git tiene muchas más características y comandos avanzados que puedes explorar según tus necesidades. 
+Recuerda que esta es una guía básica. Git tiene muchas más características y comandos avanzados que puedes explorar según tus necesidades.

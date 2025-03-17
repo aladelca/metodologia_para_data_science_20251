@@ -46,4 +46,4 @@ src/
 2. Seguir PEP 8 para estilo de código
 3. Documentar funciones y clases con docstrings
 4. Mantener notebooks limpios y bien documentados
-5. Incluir requirements.txt o environment.yml para dependencias 
+5. Incluir requirements.txt o environment.yml para dependencias

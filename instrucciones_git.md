@@ -1,6 +1,60 @@
-# Guía de Git: Comandos y Flujo de Trabajo Básico
+# Guía de Git: Instalación, Comandos y Flujo de Trabajo Básico
 
-Git es un sistema de control de versiones que te permite gestionar y rastrear cambios en tu código. Esta guía te ayudará a entender los comandos básicos y el flujo de trabajo común.
+Git es un sistema de control de versiones que te permite gestionar y rastrear cambios en tu código. Esta guía te ayudará a instalar Git y entender los comandos básicos y el flujo de trabajo común.
+
+## Instalación de Git
+
+### Windows
+1. Descarga el instalador oficial de Git para Windows desde [git-scm.com](https://git-scm.com/download/windows)
+2. Ejecuta el instalador descargado
+3. Durante la instalación:
+   - Acepta la licencia
+   - Selecciona la ubicación de instalación (por defecto está bien)
+   - Selecciona los componentes (mantén las opciones por defecto)
+   - Elige el editor por defecto (se recomienda VS Code o Notepad++)
+   - Ajusta el nombre de la rama principal (se recomienda "main")
+   - Selecciona Git from the command line and also from 3rd-party software
+   - Usa OpenSSL para HTTPS
+   - Selecciona Checkout Windows-style, commit Unix-style line endings
+   - Usa MinTTY como terminal
+   - Mantén las demás opciones por defecto
+
+### macOS
+1. **Usando Homebrew** (recomendado):
+   ```bash
+   # Instalar Homebrew si no está instalado
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+   # Instalar Git
+   brew install git
+   ```
+
+2. **Usando el instalador oficial**:
+   - Descarga el instalador desde [git-scm.com](https://git-scm.com/download/mac)
+   - Ejecuta el paquete descargado y sigue las instrucciones
+
+### Linux
+1. **Debian/Ubuntu**:
+   ```bash
+   sudo apt update
+   sudo apt install git
+   ```
+
+2. **Fedora**:
+   ```bash
+   sudo dnf install git
+   ```
+
+3. **CentOS/RHEL**:
+   ```bash
+   sudo yum install git
+   ```
+
+### Verificar la Instalación
+Después de instalar, verifica que Git esté correctamente instalado:
+```bash
+git --version
+```
 
 ## Configuración Inicial
 

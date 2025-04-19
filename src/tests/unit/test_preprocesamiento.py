@@ -39,7 +39,7 @@ def sample_dataframe_afp():
     return pd.DataFrame(
         {
             "periodo": ["Mar.2023", "Abr.2023", "May.2023"],
-            "rendimiento": ["-10.9709", "-8.1139", "-6.0815"],
+            "valor": ["-10.9709", "-8.1139", "-6.0815"],
         }
     )
 
@@ -74,7 +74,7 @@ def sample_dataframe_tc():
     return pd.DataFrame(
         {
             "periodo": ["05.Mar.25", "06.Mar.25", "07.Mar.25"],
-            "rendimiento": ["3.563", "3.675", "3.876"],
+            "valor": ["3.563", "3.675", "3.876"],
         }
     )
 
@@ -91,12 +91,12 @@ def test_obtener_datos_afp_success(mock_response_data_afp):
 
     # Verificar estructura del DataFrame
     assert isinstance(df, pd.DataFrame)
-    assert list(df.columns) == ["periodo", "rendimiento"]
+    assert list(df.columns) == ["periodo", "valor"]
     assert len(df) == 3
 
     # Verificar datos
     assert df["periodo"].tolist() == ["Mar.2023", "Abr.2023", "May.2023"]
-    assert df["rendimiento"].tolist() == ["-10.9709", "-8.1139", "-6.0815"]
+    assert df["valor"].tolist() == ["-10.9709", "-8.1139", "-6.0815"]
 
 
 def test_obtener_datos_tc_success(mock_response_data_tc):
@@ -111,12 +111,12 @@ def test_obtener_datos_tc_success(mock_response_data_tc):
 
     # Verificar estructura del DataFrame
     assert isinstance(df, pd.DataFrame)
-    assert list(df.columns) == ["periodo", "rendimiento"]
+    assert list(df.columns) == ["periodo", "valor"]
     assert len(df) == 3
 
     # Verificar datos
     assert df["periodo"].tolist() == ["05.Mar.25", "06.Mar.25", "07.Mar.25"]
-    assert df["rendimiento"].tolist() == ["3.563", "3.675", "3.876"]
+    assert df["valor"].tolist() == ["3.563", "3.675", "3.876"]
 
 
 def test_obtener_datos_afp_http_error():
@@ -147,17 +147,17 @@ def test_limpiar_datos_afp(sample_dataframe_afp):
     assert isinstance(df_clean, pd.DataFrame)
     assert list(df_clean.columns) == [
         "periodo",
-        "rendimiento",
+        "valor",
         "periodo_limpio",
-        "rendimiento_limpio",
+        "valor_limpio",
     ]
 
     # Verificar tipos de datos
     assert df_clean["periodo_limpio"].dtype == "datetime64[ns]"
-    assert df_clean["rendimiento_limpio"].dtype == "float64"
+    assert df_clean["valor_limpio"].dtype == "float64"
 
     # Verificar transformaciones
-    assert df_clean["rendimiento_limpio"].tolist() == [-0.109709, -0.081139, -0.060815]
+    assert df_clean["valor_limpio"].tolist() == [-0.109709, -0.081139, -0.060815]
 
     # Verificar fechas
     expected_dates = [datetime(2023, 3, 1), datetime(2023, 4, 1), datetime(2023, 5, 1)]
@@ -172,17 +172,17 @@ def test_limpiar_datos_tc(sample_dataframe_tc):
     assert isinstance(df_clean, pd.DataFrame)
     assert list(df_clean.columns) == [
         "periodo",
-        "rendimiento",
+        "valor",
         "periodo_limpio",
-        "rendimiento_limpio",
+        "valor_limpio",
     ]
 
     # Verificar tipos de datos
     assert df_clean["periodo_limpio"].dtype == "datetime64[ns]"
-    assert df_clean["rendimiento_limpio"].dtype == "float64"
+    assert df_clean["valor_limpio"].dtype == "float64"
 
     # Verificar transformaciones
-    assert df_clean["rendimiento_limpio"].tolist() == [3.563, 3.675, 3.876]
+    assert df_clean["valor_limpio"].tolist() == [3.563, 3.675, 3.876]
 
     # Verificar fechas
     expected_dates = [datetime(2025, 3, 5), datetime(2025, 3, 6), datetime(2025, 3, 7)]
@@ -194,7 +194,7 @@ def test_limpiar_datos_afp_invalid_data():
     invalid_df = pd.DataFrame(
         {
             "periodo": ["Invalid.2023", "Abr.2023"],
-            "rendimiento": ["not_a_number", "-8.1139"],
+            "valor": ["not_a_number", "-8.1139"],
         }
     )
 
@@ -207,7 +207,7 @@ def test_limpiar_datos_tc_invalid_data():
     invalid_df = pd.DataFrame(
         {
             "periodo": ["05.Invalid.23", "06.Abr.23"],
-            "rendimiento": ["not_a_number", "3.113"],
+            "valor": ["not_a_number", "3.113"],
         }
     )
 

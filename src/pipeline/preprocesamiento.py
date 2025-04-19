@@ -17,7 +17,7 @@ def obtener_datos_bcrp(serie: str) -> pd.DataFrame:
     ----------
     url : str, optional
         URL de la API que expone los rendimientos mensuales por período.
-        De forma predeterminada se usa la constante ``URL_BCRP``.
+        Se usa la url base URL_BCRP.
 
     Returns
     -------
@@ -36,7 +36,7 @@ def obtener_datos_bcrp(serie: str) -> pd.DataFrame:
     --------
     >>> df = obtener_datos_afp()
     >>> df.head()
-        periodo  rendimiento
+        periodo  valor
     0  ENE2024       0.0123
     """
     # Realizar la petición
@@ -49,10 +49,10 @@ def obtener_datos_bcrp(serie: str) -> pd.DataFrame:
 
     # Extraer períodos y rendimientos
     periodos = [period["name"] for period in data["periods"]]
-    rendimientos = [period["values"][0] for period in data["periods"]]
+    valores = [period["values"][0] for period in data["periods"]]
 
     # Crear DataFrame y devolver
-    df_afp = pd.DataFrame({"periodo": periodos, "rendimiento": rendimientos})
+    df_afp = pd.DataFrame({"periodo": periodos, "valor": valores})
     return df_afp
 
 
@@ -99,9 +99,9 @@ def limpiar_datos_bcrp(
     Parameters
     ----------
     df : pd.DataFrame
-        Datos crudos con las columnas ``periodo`` y ``rendimiento``.
+        Datos crudos con las columnas ``periodo`` y ``valor``.
     porcentual : bool, default ``True``
-        Indica si los valores de ``rendimiento`` vienen como porcentaje.
+        Indica si los valores de ``valor`` vienen como porcentaje.
     diaria : bool, default ``False``
         `True` → la fecha es diaria («dd Mmm.aa»),
         `False` → la fecha es mensual («Mmm.aaaa»).
@@ -113,15 +113,15 @@ def limpiar_datos_bcrp(
     pd.DataFrame
         El mismo `DataFrame` con dos columnas nuevas:
 
-        * ``periodo_limpio`` – objeto ``datetime``.
-        * ``rendimiento_limpio`` – número ``float`` limpio.
+        * ``periodo`` – objeto ``datetime``.
+        * ``valor`` – número ``float`` limpio.
 
     Raises
     ------
     ValueError
         Si faltan columnas requeridas o el formato es inválido.
     """
-    columnas_requeridas = {"periodo", "rendimiento"}
+    columnas_requeridas = {"periodo", "valor"}
     if not columnas_requeridas.issubset(df.columns):
         raise ValueError(f"Se requieren las columnas {columnas_requeridas}")
 
@@ -131,11 +131,11 @@ def limpiar_datos_bcrp(
     df["periodo_limpio"] = df["periodo"].apply(convertir)
 
     # Limpieza de rendimiento
-    rend = pd.to_numeric(df["rendimiento"], errors="coerce")
-    df["rendimiento_limpio"] = (rend / 100 if porcentual else rend).round(6)
+    rend = pd.to_numeric(df["valor"], errors="coerce")
+    df["valor_limpio"] = (rend / 100 if porcentual else rend).round(6)
 
     # Exportar si se solicita
     if ruta:
-        df[["periodo_limpio", "rendimiento_limpio"]].to_csv(ruta, index=False)
+        df[["periodo_limpio", "valor_limpio"]].to_csv(ruta, index=False)
 
     return df

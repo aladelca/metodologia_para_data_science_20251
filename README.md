@@ -12,13 +12,25 @@ El proyecto se centra en desarrollar una estrategia de inversión óptima para f
 - Evaluación de riesgo y retorno esperado
 - Backtesting de estrategias
 
+### Parámetros del Caso de Uso
+
+- **Presupuesto**: 1,000,000 de soles peruanos
+- **Horizonte de inversión**: 10 años
+- **Opciones de inversión a evaluar**:
+  1. Mantener los fondos en la AFP
+  2. Invertir en bonos del tesoro
+  3. Comprar propiedades y cobrar alquiler
+  4. Invertir todo en el índice S&P 500 (ETF SPY)
+  5. Diversificar en 100 acciones diferentes
+  6. Invertir en oro
+
 ### Objetivos
 
-1. Analizar el comportamiento histórico de diferentes activos financieros
-2. Desarrollar modelos predictivos para estimar rendimientos futuros
-3. Implementar algoritmos de optimización de portafolio
-4. Evaluar y comparar diferentes estrategias de inversión
-5. Generar recomendaciones basadas en el perfil de riesgo del inversionista
+1. Analizar el comportamiento histórico de las seis opciones de inversión
+2. Desarrollar modelos predictivos para estimar rendimientos futuros en el horizonte de 10 años
+3. Implementar algoritmos de optimización de portafolio considerando el presupuesto disponible
+4. Evaluar y comparar las diferentes estrategias de inversión
+5. Generar recomendaciones basadas en el perfil de riesgo del inversionista y el horizonte temporal definido
 
 ## Estructura del Repositorio
 
@@ -104,78 +116,97 @@ El proyecto se centra en desarrollar una estrategia de inversión óptima para f
 ## Metodología de Desarrollo (CRISP-DM)
 
 1. **Comprensión del Negocio**
-   - Definición de objetivos de inversión
-   - Identificación de restricciones y perfil de riesgo
-   - Establecimiento de métricas de éxito
+   - Definición de objetivos de inversión para el monto de 1,000,000 de soles
+   - Identificación de restricciones legales y fiscales en Perú para cada opción
+   - Definición del perfil de riesgo para un horizonte de 10 años
+   - Establecimiento de métricas de éxito y rendimiento esperado
    - Planificación del proyecto
 
 2. **Comprensión de los Datos**
-   - Recopilación de datos financieros históricos
-   - Exploración inicial de instrumentos disponibles
-   - Verificación de calidad de datos
-   - Identificación de fuentes adicionales de información
+   - Recopilación de datos históricos para cada opción de inversión:
+     * Rendimiento histórico de fondos AFP
+     * Rendimiento de bonos del tesoro peruano e internacional
+     * Datos del mercado inmobiliario y retornos por alquiler
+     * Rendimiento histórico del S&P 500
+     * Datos de las 100 acciones a considerar en la diversificación
+     * Comportamiento histórico del oro
+   - Verificación de calidad de datos y tratamiento de series temporales
+   - Identificación de fuentes adicionales de información macroeconómica
 
 3. **Preparación de los Datos**
    - Limpieza y tratamiento de datos faltantes
-   - Cálculo de indicadores financieros
-   - Feature engineering para análisis técnico
+   - Ajuste por inflación y tipo de cambio (USD/PEN)
+   - Cálculo de indicadores financieros relevantes para cada clase de activo
+   - Feature engineering para análisis técnico y fundamental
    - Normalización y transformación de variables
-   - Preparación de conjuntos de entrenamiento y validación
+   - Preparación de conjuntos de entrenamiento y validación con series temporales
 
 4. **Modelado**
-   - Desarrollo de modelos predictivos
-     * Predicción de rendimientos
-     * Estimación de volatilidad
-     * Análisis de correlaciones
-   - Implementación de algoritmos de optimización
-     * Estrategias de factor investing
+   - Desarrollo de modelos predictivos para cada alternativa:
+     * Predicción de rendimientos en AFPs
+     * Proyección de tasas de interés para bonos
+     * Modelos de valoración inmobiliaria y retornos por alquiler
+     * Predicción de rendimientos para S&P 500
+     * Modelos para la selección de las 100 acciones
+     * Proyección del precio del oro
+   - Implementación de algoritmos de optimización:
+     * Comparación directa de alternativas
      * Optimización con restricciones de riesgo
+     * Modelos de asignación de activos
    - Validación cruzada y ajuste de hiperparámetros
 
 5. **Evaluación**
-   - Backtesting de estrategias
-   - Evaluación de robustez
-   - Análisis de costos de transacción
-   - Validación con stakeholders
+   - Backtesting de estrategias con datos históricos
+   - Simulación de escenarios para el horizonte de 10 años
+   - Análisis de robustez ante diferentes condiciones macroeconómicas
+   - Evaluación de costos de transacción, impuestos y comisiones
+   - Análisis de liquidez y accesibilidad de cada opción
+   - Validación con expertos financieros
 
 6. **Implementación**
-   - Documentación detallada de modelos y estrategias
-   - Desarrollo de pipelines de producción
-   - Monitoreo de rendimiento
-   - Procedimientos de rebalanceo
-   - Guías de implementación práctica
+   - Documentación detallada de la estrategia recomendada
+   - Plan de implementación para el inversionista
+   - Guía de monitoreo y ajustes para el horizonte de 10 años
+   - Procedimientos de rebalanceo y toma de decisiones
+   - Recomendaciones específicas para el contexto peruano
 
 ## Entregables por Fase
 
 ### 1. Comprensión del Negocio
-- Documento de objetivos y restricciones
-- Plan de proyecto
-- Definición de KPIs
+- Documento de objetivos y restricciones específicas para inversión de 1,000,000 de soles
+- Perfil de riesgo y expectativas para el horizonte de 10 años
+- Plan de proyecto y definición de KPIs
+- Análisis preliminar de las seis alternativas de inversión
 
 ### 2. Comprensión de los Datos
-- Informe de calidad de datos
-- Catálogo de fuentes de datos
-- Análisis exploratorio inicial
+- Informe de calidad de datos históricos para cada alternativa de inversión
+- Catálogo de fuentes de datos para AFP, bonos, propiedades, S&P 500, acciones diversificadas y oro
+- Análisis exploratorio inicial con foco en rendimiento histórico a 10 años
 
 ### 3. Preparación de los Datos
-- Pipeline de procesamiento de datos
-- Documentación de features generados
-- Conjuntos de datos procesados
+- Pipeline de procesamiento de datos para las seis opciones de inversión
+- Documentación de features generados relevantes para cada clase de activo
+- Ajuste de datos por inflación y tipo de cambio (soles peruanos)
+- Conjuntos de datos procesados para modelado
 
 ### 4. Modelado
-- Notebooks con implementación de modelos
+- Notebooks con implementación de modelos predictivos para cada alternativa
+- Modelos de optimización considerando el monto de 1,000,000 de soles
+- Simulación de escenarios para el horizonte de 10 años
 - Documentación de parámetros y decisiones
-- Resultados de validación
+- Resultados de validación comparativos
 
 ### 5. Evaluación
-- Reportes de rendimiento
-- Análisis de riesgo
-- Comparativas con benchmarks
+- Reportes de rendimiento proyectado a 10 años
+- Análisis de riesgo ajustado al horizonte temporal
+- Comparativas con benchmarks para cada clase de activo
+- Evaluación de costos de transacción e impuestos aplicables en Perú
 
 ### 6. Implementación
-- Código documentado
-- Manual de usuario
-- Procedimientos de mantenimiento
+- Recomendación final entre las seis opciones evaluadas
+- Código documentado para replicar el análisis
+- Manual de usuario para implementación práctica de la estrategia
+- Guía de rebalanceo para el horizonte de 10 años
 
 ## Convenciones de Código y Calidad
 

@@ -4,11 +4,11 @@ from datetime import datetime
 import pandas as pd
 import requests
 
-from .config import EQUIVALENCIAS_MESES, RUTA_AFP, URL_AFP
+from .config import EQUIVALENCIAS_MESES, URL_BCRP
 
 
-def obtener_datos_afp(url: str = URL_AFP) -> pd.DataFrame:
-    """Descarga rendimientos mensuales de fondos de pensiones (AFP).
+def obtener_datos_bcrp(serie: str) -> pd.DataFrame:
+    """Descarga datos del BCRP.
 
     Convierte la respuesta de la API en un ``pandas.DataFrame`` con las
     columnas ``periodo`` y ``rendimiento``.
@@ -17,7 +17,7 @@ def obtener_datos_afp(url: str = URL_AFP) -> pd.DataFrame:
     ----------
     url : str, optional
         URL de la API que expone los rendimientos mensuales por período.
-        De forma predeterminada se usa la constante ``URL_AFP``.
+        De forma predeterminada se usa la constante ``URL_BCRP``.
 
     Returns
     -------
@@ -40,6 +40,7 @@ def obtener_datos_afp(url: str = URL_AFP) -> pd.DataFrame:
     0  ENE2024       0.0123
     """
     # Realizar la petición
+    url = URL_BCRP + serie
     response = requests.get(url)
     response.raise_for_status()  # <‑‑ lanza HTTPError si falla
 
@@ -55,85 +56,86 @@ def obtener_datos_afp(url: str = URL_AFP) -> pd.DataFrame:
     return df_afp
 
 
-def limpiar_datos_afp(df: pd.DataFrame) -> pd.DataFrame:
-    """Limpia y transforma los datos de AFP.
+def _fecha_diaria(fecha_str: str) -> datetime:
+    """Convierte «dd Mmm.aa» (p. ej. ``'05 Mar.25'``) a ``datetime``."""
+    try:
+        dia = fecha_str[0:2]
+        mes_es = fecha_str[3:6].upper()
+        anio = fecha_str[7:]
+        mes_en = EQUIVALENCIAS_MESES[mes_es]  # KeyError si no existe
+        return datetime.strptime(f"{dia} {mes_en} {anio}", "%d %b %y")
+    except (KeyError, ValueError, IndexError) as exc:
+        raise ValueError(f"Formato de fecha diaria no válido: {fecha_str}") from exc
 
-    Convierte el período a ``datetime``, pasa el rendimiento de
-    porcentaje a proporción decimal y guarda las columnas limpias
-    como CSV en ``RUTA_AFP``.
+
+def _fecha_mensual(fecha_str: str) -> datetime:
+    """Convierte «Mmm.aaaa» (p. ej. ``'Mar.2025'``) a ``datetime``."""
+    try:
+        mes_es = fecha_str[:3].upper()
+        anio = fecha_str[4:]
+        mes_en = EQUIVALENCIAS_MESES[mes_es]  # KeyError si no existe
+        return datetime.strptime(f"{mes_en} {anio}", "%b %Y")
+    except (KeyError, ValueError, IndexError) as exc:
+        raise ValueError(f"Formato de fecha mensual no válido: {fecha_str}") from exc
+
+
+# función pública ──────────────────────────────────────────────────────────────
+def limpiar_datos_bcrp(
+    df: pd.DataFrame,
+    porcentual: bool = True,
+    diaria: bool = False,
+    ruta: str | None = None,
+) -> pd.DataFrame:
+    """Limpia y estandariza los datos descargados del BCRP.
+
+    La función valida el `DataFrame`, convierte la columna ``periodo`` a
+    ``datetime`` (diaria o mensual) y normaliza ``rendimiento``:
+    - Si `porcentual=True`, el rendimiento se divide entre 100 → proporción.
+    - Si `porcentual=False`, se asume que ya está en unidades deseadas.
+
+    Finalmente, si `ruta` es distinta de ``None`` se exportan las columnas
+    limpias a CSV.
 
     Parameters
     ----------
     df : pd.DataFrame
-        DataFrame con las columnas ``periodo`` y ``rendimiento`` tal como
-        las devuelve :func:`obtener_datos_afp`.
+        Datos crudos con las columnas ``periodo`` y ``rendimiento``.
+    porcentual : bool, default ``True``
+        Indica si los valores de ``rendimiento`` vienen como porcentaje.
+    diaria : bool, default ``False``
+        `True` → la fecha es diaria («dd Mmm.aa»),
+        `False` → la fecha es mensual («Mmm.aaaa»).
+    ruta : str | None, default ``None``
+        Ruta del archivo CSV a generar.  Si es ``None`` no se guarda.
 
     Returns
     -------
     pd.DataFrame
-        El mismo DataFrame de entrada, pero con dos columnas adicionales:
+        El mismo `DataFrame` con dos columnas nuevas:
 
-        * ``periodo_limpio`` – objeto ``datetime`` con el primer día del mes.
-        * ``rendimiento_limpio`` – rendimiento mensual en proporción decimal.
+        * ``periodo_limpio`` – objeto ``datetime``.
+        * ``rendimiento_limpio`` – número ``float`` limpio.
 
     Raises
     ------
     ValueError
-        Si el DataFrame no tiene las columnas requeridas o si los datos son inválidos.
-    KeyError
-        Si el formato del período no es válido.
-
-    Examples
-    --------
-    >>> df_raw = obtener_datos_afp()
-    >>> df_clean = limpiar_datos_afp(df_raw)
-    >>> df_clean.dtypes
-    periodo                      object
-    rendimiento                  object
-    periodo_limpio       datetime64[ns]
-    rendimiento_limpio          float64
-    dtype: object
+        Si faltan columnas requeridas o el formato es inválido.
     """
-    # Verificar que el DataFrame tiene las columnas requeridas
-    required_columns = ["periodo", "rendimiento"]
-    if not all(col in df.columns for col in required_columns):
-        raise ValueError(f"El DataFrame debe tener las columnas {required_columns}")
+    columnas_requeridas = {"periodo", "rendimiento"}
+    if not columnas_requeridas.issubset(df.columns):
+        raise ValueError(f"Se requieren las columnas {columnas_requeridas}")
 
-    def convertir_fecha(fecha_str: str) -> datetime:
-        """Convierte una fecha en formato 'Mmm.YYYY' a datetime."""
-        try:
-            # Extraer mes y año
-            mes_espanol = fecha_str[:3].upper()  # Primeros 3 caracteres en mayúsculas
-            anio = fecha_str[4:]  # Todo después del punto
+    # Conversión de fechas
+    convertir = _fecha_diaria if diaria else _fecha_mensual
+    df = df.copy()  # evita modificar el original
+    df["periodo_limpio"] = df["periodo"].apply(convertir)
 
-            # Verificar que el mes existe en el diccionario
-            if mes_espanol not in EQUIVALENCIAS_MESES:
-                raise KeyError(f"Mes no válido: {mes_espanol}")
+    # Limpieza de rendimiento
+    rend = pd.to_numeric(df["rendimiento"], errors="coerce")
+    df["rendimiento_limpio"] = (rend / 100 if porcentual else rend).round(6)
 
-            mes_ingles = EQUIVALENCIAS_MESES[mes_espanol]
-            fecha_ingles = f"{mes_ingles} {anio}"
-            return datetime.strptime(fecha_ingles, "%b %Y")
-        except (ValueError, IndexError) as e:
-            raise ValueError(f"Formato de fecha no válido: {fecha_str}") from e
+    # Exportar si se solicita
+    if ruta:
+        df[["periodo_limpio", "rendimiento_limpio"]].to_csv(ruta, index=False)
 
-    try:
-        # Transformación de columnas
-        df["periodo_limpio"] = df["periodo"].apply(convertir_fecha)
-        df["rendimiento_limpio"] = (
-            pd.to_numeric(df["rendimiento"], errors="coerce") / 100
-        )
-
-        df["rendimiento_limpio"] = df["rendimiento_limpio"].round(6)
-
-        # Verificar si hay valores nulos después de la conversión
-        if df["rendimiento_limpio"].isnull().any():
-            raise ValueError(
-                "Algunos valores de rendimiento no pudieron ser convertidos a números"
-            )
-
-        # Guardar CSV con las columnas limpias
-        df[["periodo_limpio", "rendimiento_limpio"]].to_csv(RUTA_AFP, index=False)
-
-        return df
-    except Exception as e:
-        raise ValueError(f"Error al limpiar los datos: {str(e)}") from e
+    return df

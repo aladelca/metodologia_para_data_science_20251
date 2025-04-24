@@ -1,4 +1,4 @@
-# Metodología para Data Science: Optimización de Estrategias de Inversión
+# Metodología para Data Science: Optimización de Estrategias de Inversiónnnn
 
 Este repositorio contiene el código y recursos para el curso de Metodología para Data Science, enfocado en el desarrollo de estrategias óptimas de inversión para fondos provenientes de AFP utilizando técnicas de Machine Learning y optimización.
 

@@ -1,31 +1,21 @@
-"""Funciones de preprocesamiento."""
+"""Funciones de preprocesamiento para datos del BCRP."""
 from datetime import datetime
 
 import pandas as pd
 import requests
 
-from .config import EQUIVALENCIAS_MESES, URL_BCRP
+from .config import EQUIVALENCIAS_MESES, SERIE_AFP, SERIE_BONO, URL_BCRP
 
 
-def obtener_datos_bcrp(serie: str) -> pd.DataFrame:
-    """Descarga datos del BCRP.
-
-    Convierte la respuesta de la API en un ``pandas.DataFrame`` con las
-    columnas ``periodo`` y ``rendimiento``.
-
-    Parameters
-    ----------
-    url : str, optional
-        URL de la API que expone los rendimientos mensuales por período.
-        Se usa la url base URL_BCRP.
+def obtener_datos_afp() -> pd.DataFrame:
+    """Descarga datos de rendimientos de AFP del BCRP.
 
     Returns
     -------
     pd.DataFrame
         DataFrame con:
-
-        * ``periodo`` – Identificador del período (por ejemplo, ``'ENE2024'``).
-        * ``rendimiento`` – Rendimiento mensual como *float* (porcentaje).
+        * ``periodo`` – Identificador del período (por ejemplo, ``'Mar.2023'``).
+        * ``valor`` – Rendimiento mensual como string (porcentaje).
 
     Raises
     ------
@@ -37,7 +27,58 @@ def obtener_datos_bcrp(serie: str) -> pd.DataFrame:
     >>> df = obtener_datos_afp()
     >>> df.head()
         periodo  valor
-    0  ENE2024       0.0123
+    0  Mar.2023  -10.9709
+    """
+    return obtener_datos_bcrp(SERIE_AFP)
+
+
+def obtener_datos_bono() -> pd.DataFrame:
+    """Descarga datos de tasas de bonos del BCRP.
+
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame con:
+        * ``periodo`` – Identificador del período (por ejemplo, ``'05.Mar.25'``).
+        * ``valor`` – Tasa de interés como string.
+
+    Raises
+    ------
+    requests.HTTPError
+        Si la petición a la API devuelve un código de estado distinto de 200.
+
+    Examples
+    --------
+    >>> df = obtener_datos_bono()
+    >>> df.head()
+        periodo  valor
+    0  05.Mar.25  5.563
+    """
+    return obtener_datos_bcrp(SERIE_BONO)
+
+
+def obtener_datos_bcrp(serie: str) -> pd.DataFrame:
+    """Descarga datos del BCRP.
+
+    Convierte la respuesta de la API en un ``pandas.DataFrame`` con las
+    columnas ``periodo`` y ``valor``.
+
+    Parameters
+    ----------
+    serie : str
+        Código de la serie del BCRP.
+
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame con:
+        * ``periodo`` – Identificador del período.
+        * ``valor`` – Valor de la serie como string.
+
+    Raises
+    ------
+    requests.HTTPError
+        Si la petición a la API devuelve un código de estado distinto de 200.
     """
     # Realizar la petición
     url = URL_BCRP + serie
@@ -47,13 +88,13 @@ def obtener_datos_bcrp(serie: str) -> pd.DataFrame:
     # Convertir la respuesta JSON en diccionario de Python
     data = response.json()
 
-    # Extraer períodos y rendimientos
+    # Extraer períodos y valores
     periodos = [period["name"] for period in data["periods"]]
     valores = [period["values"][0] for period in data["periods"]]
 
     # Crear DataFrame y devolver
-    df_afp = pd.DataFrame({"periodo": periodos, "valor": valores})
-    return df_afp
+    df = pd.DataFrame({"periodo": periodos, "valor": valores})
+    return df
 
 
 def _fecha_diaria(fecha_str: str) -> datetime:
@@ -79,7 +120,6 @@ def _fecha_mensual(fecha_str: str) -> datetime:
         raise ValueError(f"Formato de fecha mensual no válido: {fecha_str}") from exc
 
 
-# función pública ──────────────────────────────────────────────────────────────
 def limpiar_datos_bcrp(
     df: pd.DataFrame,
     porcentual: bool = True,
@@ -89,8 +129,8 @@ def limpiar_datos_bcrp(
     """Limpia y estandariza los datos descargados del BCRP.
 
     La función valida el `DataFrame`, convierte la columna ``periodo`` a
-    ``datetime`` (diaria o mensual) y normaliza ``rendimiento``:
-    - Si `porcentual=True`, el rendimiento se divide entre 100 → proporción.
+    ``datetime`` (diaria o mensual) y normaliza ``valor``:
+    - Si `porcentual=True`, el valor se divide entre 100 → proporción.
     - Si `porcentual=False`, se asume que ya está en unidades deseadas.
 
     Finalmente, si `ruta` es distinta de ``None`` se exportan las columnas
@@ -102,9 +142,11 @@ def limpiar_datos_bcrp(
         Datos crudos con las columnas ``periodo`` y ``valor``.
     porcentual : bool, default ``True``
         Indica si los valores de ``valor`` vienen como porcentaje.
+        - ``True`` para datos de AFP (rendimientos en porcentaje)
+        - ``False`` para datos de bonos (tasas directas)
     diaria : bool, default ``False``
-        `True` → la fecha es diaria («dd Mmm.aa»),
-        `False` → la fecha es mensual («Mmm.aaaa»).
+        `True` → la fecha es diaria («dd Mmm.aa»), usado para bonos
+        `False` → la fecha es mensual («Mmm.aaaa»), usado para AFP
     ruta : str | None, default ``None``
         Ruta del archivo CSV a generar.  Si es ``None`` no se guarda.
 
@@ -112,14 +154,29 @@ def limpiar_datos_bcrp(
     -------
     pd.DataFrame
         El mismo `DataFrame` con dos columnas nuevas:
-
-        * ``periodo`` – objeto ``datetime``.
-        * ``valor`` – número ``float`` limpio.
+        * ``periodo_limpio`` – objeto ``datetime``.
+        * ``valor_limpio`` – número ``float`` limpio.
 
     Raises
     ------
     ValueError
         Si faltan columnas requeridas o el formato es inválido.
+
+    Examples
+    --------
+    >>> # Para datos de AFP
+    >>> df_afp = obtener_datos_afp()
+    >>> df_limpio = limpiar_datos_bcrp(df_afp, porcentual=True, diaria=False)
+    >>> df_limpio.head()
+        periodo  valor  periodo_limpio  valor_limpio
+    0  Mar.2023  -10.9709  2023-03-01  -0.109709
+
+    >>> # Para datos de bonos
+    >>> df_bono = obtener_datos_bono()
+    >>> df_limpio = limpiar_datos_bcrp(df_bono, porcentual=False, diaria=True)
+    >>> df_limpio.head()
+        periodo  valor  periodo_limpio  valor_limpio
+    0  05.Mar.25  5.563  2025-03-05  5.563
     """
     columnas_requeridas = {"periodo", "valor"}
     if not columnas_requeridas.issubset(df.columns):
@@ -130,9 +187,9 @@ def limpiar_datos_bcrp(
     df = df.copy()  # evita modificar el original
     df["periodo_limpio"] = df["periodo"].apply(convertir)
 
-    # Limpieza de rendimiento
-    rend = pd.to_numeric(df["valor"], errors="coerce")
-    df["valor_limpio"] = (rend / 100 if porcentual else rend).round(6)
+    # Limpieza de valores
+    valores = pd.to_numeric(df["valor"], errors="coerce")
+    df["valor_limpio"] = (valores / 100 if porcentual else valores).round(6)
 
     # Exportar si se solicita
     if ruta:

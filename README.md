@@ -2,7 +2,7 @@
 
 Este repositorio contiene el código y recursos para el curso de Metodología para Data Science, enfocado en el desarrollo de estrategias óptimas de inversión para fondos provenientes de AFP utilizando técnicas de Machine Learning y optimización.
 
-## Caso de Uso: Optimización de Portafolio de Inversión
+## Caso de Uso: Optimización de Portafolio de Inversión-
 
 El proyecto se centra en desarrollar una estrategia de inversión óptima para fondos retirados de AFP, utilizando:
 

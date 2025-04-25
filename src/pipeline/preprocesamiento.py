@@ -1,5 +1,6 @@
 """Funciones de preprocesamiento."""
 from datetime import datetime
+from typing import Optional
 
 import pandas as pd
 import requests
@@ -84,7 +85,7 @@ def limpiar_datos_bcrp(
     df: pd.DataFrame,
     porcentual: bool = True,
     diaria: bool = False,
-    ruta: str | None = None,
+    ruta: Optional[str] = None,  # Cambiado a Optional[str]
 ) -> pd.DataFrame:
     """Limpia y estandariza los datos descargados del BCRP.
 
@@ -132,7 +133,7 @@ def limpiar_datos_bcrp(
 
     # Limpieza de rendimiento
     rend = pd.to_numeric(df["valor"], errors="coerce")
-    df["valor_limpio"] = (rend / 100 if porcentual else rend).round(6)
+    df["valor_limpio"] = round(rend / 100, 6) if porcentual else round(rend, 6)
 
     # Exportar si se solicita
     if ruta:

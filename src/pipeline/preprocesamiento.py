@@ -8,15 +8,25 @@ import requests
 from .config import EQUIVALENCIAS_MESES, SERIE_AFP, SERIE_BONO, URL_BCRP
 
 
-def obtener_datos_afp() -> pd.DataFrame:
-    """Descarga datos de rendimientos de AFP del BCRP.
+def obtener_datos_bcrp(serie: str) -> pd.DataFrame:
+    """Descarga datos del BCRP.
+
+    Convierte la respuesta de la API en un ``pandas.DataFrame`` con las
+    columnas ``periodo`` y ``rendimiento``.
+
+    Parameters
+    ----------
+    url : str, optional
+        URL de la API que expone los rendimientos mensuales por período.
+        Se usa la url base URL_BCRP.
 
     Returns
     -------
     pd.DataFrame
         DataFrame con:
-        * ``periodo`` – Identificador del período (por ejemplo, ``'Mar.2023'``).
-        * ``valor`` – Rendimiento mensual como string (porcentaje).
+
+        * ``periodo`` – Identificador del período (por ejemplo, ``'ENE2024'``).
+        * ``rendimiento`` – Rendimiento mensual como *float* (porcentaje).
 
     Raises
     ------
@@ -28,9 +38,23 @@ def obtener_datos_afp() -> pd.DataFrame:
     >>> df = obtener_datos_afp()
     >>> df.head()
         periodo  valor
-    0  Mar.2023  -10.9709
+    0  ENE2024       0.0123
     """
-    return obtener_datos_bcrp(SERIE_AFP)
+    # Realizar la petición
+    url = URL_BCRP + serie
+    response = requests.get(url)
+    response.raise_for_status()  # <‑‑ lanza HTTPError si falla
+
+    # Convertir la respuesta JSON en diccionario de Python
+    data = response.json()
+
+    # Extraer períodos y rendimientos
+    periodos = [period["name"] for period in data["periods"]]
+    valores = [period["values"][0] for period in data["periods"]]
+
+    # Crear DataFrame y devolver
+    df_afp = pd.DataFrame({"periodo": periodos, "valor": valores})
+    return df_afp
 
 
 def obtener_datos_bono() -> pd.DataFrame:
@@ -188,15 +212,9 @@ def limpiar_datos_bcrp(
     df = df.copy()  # evita modificar el original
     df["periodo_limpio"] = df["periodo"].apply(convertir)
 
-<<<<<<< HEAD
     # Limpieza de rendimiento
     rend = pd.to_numeric(df["valor"], errors="coerce")
     df["valor_limpio"] = round(rend / 100, 6) if porcentual else round(rend, 6)
-=======
-    # Limpieza de valores
-    valores = pd.to_numeric(df["valor"], errors="coerce")
-    df["valor_limpio"] = (valores / 100 if porcentual else valores).round(6)
->>>>>>> 66556dbfa05628bc6a7938352efa9e169c72ad2b
 
     # Exportar si se solicita
     if ruta:

@@ -6,10 +6,14 @@ import pandas as pd
 import pytest
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 from pipeline.config import RUTA_AFP, RUTA_ORO, RUTA_TC, SERIE_AFP, SERIE_ORO, SERIE_TC
 =======
 from pipeline.config import RUTA_AFP, RUTA_TC, RUTA_BONO, SERIE_AFP, SERIE_TC, SERIE_BONO
 >>>>>>> 1f515ef (grupo bono)
+=======
+from pipeline.config import RUTA_AFP, RUTA_TC, RUTA_BONO, SERIE_AFP, SERIE_TC, SERIE_BONO
+>>>>>>> 66556dbfa05628bc6a7938352efa9e169c72ad2b
 from pipeline.preprocesamiento import limpiar_datos_bcrp, obtener_datos_bcrp
 
 
@@ -85,6 +89,7 @@ def sample_dataframe_tc():
 
 @pytest.fixture
 <<<<<<< HEAD
+<<<<<<< HEAD
 def mock_response_data_oro():
     """Fixture con datos de ejemplo de la API de ARO."""
     return {
@@ -98,6 +103,8 @@ def mock_response_data_oro():
                     ),
                     "dec": "0",
 =======
+=======
+>>>>>>> 66556dbfa05628bc6a7938352efa9e169c72ad2b
 def mock_response_data_bono():
     """Fixture con datos de ejemplo de la API de bonos."""
     return {
@@ -107,11 +114,15 @@ def mock_response_data_bono():
                 {
                     "name": "Tasa de interés de bonos del tesoro",
                     "dec": "3",
+<<<<<<< HEAD
 >>>>>>> 1f515ef (grupo bono)
+=======
+>>>>>>> 66556dbfa05628bc6a7938352efa9e169c72ad2b
                 }
             ],
         },
         "periods": [
+<<<<<<< HEAD
 <<<<<<< HEAD
             {"name": "Abr.2023", "values": ["2001.641"]},
             {"name": "May.2023", "values": ["1991.18"]},
@@ -121,11 +132,17 @@ def mock_response_data_bono():
             {"name": "06.Mar.25", "values": ["5.675"]},
             {"name": "07.Mar.25", "values": ["5.876"]},
 >>>>>>> 1f515ef (grupo bono)
+=======
+            {"name": "05.Mar.25", "values": ["5.563"]},
+            {"name": "06.Mar.25", "values": ["5.675"]},
+            {"name": "07.Mar.25", "values": ["5.876"]},
+>>>>>>> 66556dbfa05628bc6a7938352efa9e169c72ad2b
         ],
     }
 
 
 @pytest.fixture
+<<<<<<< HEAD
 <<<<<<< HEAD
 def sample_dataframe_oro():
     """Fixture con DataFrame de ejemplo para limpiar_datos_oro."""
@@ -134,13 +151,18 @@ def sample_dataframe_oro():
             "periodo": ["Abr.2023", "May.2023", "Jun.2023"],
             "valor": ["2001.641", "1991.18", "941.1"],
 =======
+=======
+>>>>>>> 66556dbfa05628bc6a7938352efa9e169c72ad2b
 def sample_dataframe_bono():
     """Fixture con DataFrame de ejemplo para limpiar_datos_bono."""
     return pd.DataFrame(
         {
             "periodo": ["05.Mar.25", "06.Mar.25", "07.Mar.25"],
             "valor": ["5.563", "5.675", "5.876"],
+<<<<<<< HEAD
 >>>>>>> 1f515ef (grupo bono)
+=======
+>>>>>>> 66556dbfa05628bc6a7938352efa9e169c72ad2b
         }
     )
 
@@ -351,6 +373,7 @@ def test_limpiar_datos_tc_invalid_data():
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 def test_limpiar_datos_bcrp_missing_columns():
     """Test para limpiar_datos_bcrp con columnas faltantes."""
     invalid_df = pd.DataFrame(
@@ -366,6 +389,8 @@ def test_limpiar_datos_bcrp_missing_columns():
     ):
         limpiar_datos_bcrp(invalid_df, False, False)
 =======
+=======
+>>>>>>> 66556dbfa05628bc6a7938352efa9e169c72ad2b
 def test_obtener_datos_bono_success(mock_response_data_bono):
     """Test para obtener_datos_bono con respuesta exitosa."""
     # Mock de la respuesta HTTP
@@ -432,4 +457,7 @@ def test_limpiar_datos_bono_invalid_data():
 
     with pytest.raises(ValueError):
         limpiar_datos_bcrp(invalid_df, False, True, RUTA_BONO)
+<<<<<<< HEAD
 >>>>>>> 1f515ef (grupo bono)
+=======
+>>>>>>> 66556dbfa05628bc6a7938352efa9e169c72ad2b

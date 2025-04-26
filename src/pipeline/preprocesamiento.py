@@ -188,9 +188,15 @@ def limpiar_datos_bcrp(
     df = df.copy()  # evita modificar el original
     df["periodo_limpio"] = df["periodo"].apply(convertir)
 
+<<<<<<< HEAD
     # Limpieza de rendimiento
     rend = pd.to_numeric(df["valor"], errors="coerce")
     df["valor_limpio"] = round(rend / 100, 6) if porcentual else round(rend, 6)
+=======
+    # Limpieza de valores
+    valores = pd.to_numeric(df["valor"], errors="coerce")
+    df["valor_limpio"] = (valores / 100 if porcentual else valores).round(6)
+>>>>>>> 66556dbfa05628bc6a7938352efa9e169c72ad2b
 
     # Exportar si se solicita
     if ruta:

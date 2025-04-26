@@ -146,6 +146,7 @@ def sample_dataframe_oro():
     }
     )
 
+@pytest.fixture
 def sample_dataframe_bono():
     """Fixture con DataFrame de ejemplo para limpiar_datos_bono."""
     return pd.DataFrame(

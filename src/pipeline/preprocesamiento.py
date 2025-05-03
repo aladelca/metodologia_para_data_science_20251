@@ -4,6 +4,7 @@ from typing import Optional
 
 import pandas as pd
 import requests
+import yfinance as yf
 
 from .config import EQUIVALENCIAS_MESES, URL_BCRP
 
@@ -138,5 +139,28 @@ def limpiar_datos_bcrp(
     # Exportar si se solicita
     if ruta:
         df[["periodo_limpio", "valor_limpio"]].to_csv(ruta, index=False)
+
+    return df
+
+
+def obtener_datos_yfinance(
+    ticker: list[str], fecha_inicio: str, fecha_fin: str
+) -> pd.DataFrame:
+    """Obtiene los datos de los tickers de yfinance.
+
+    Parameters
+    ----------
+    ticker : list[str]
+        Lista de tickers de yfinance.
+
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame con los datos de los tickers de yfinance.
+    """
+    df = yf.download(ticker, start=fecha_inicio, end=fecha_fin)
+
+    # Seleccionar solamente los precios al cierre del día
+    df = df.Close
 
     return df

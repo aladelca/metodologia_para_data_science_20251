@@ -1,12 +1,16 @@
 """Tests para las funciones de preprocesamiento."""
-from datetime import datetime
+from datetime import datetime, timedelta
 from unittest.mock import MagicMock, patch
 
 import pandas as pd
 import pytest
 
 from pipeline.config import RUTA_AFP, RUTA_ORO, RUTA_TC, SERIE_AFP, SERIE_ORO, SERIE_TC
-from pipeline.preprocesamiento import limpiar_datos_bcrp, obtener_datos_bcrp
+from pipeline.preprocesamiento import (
+    limpiar_datos_bcrp,
+    obtener_datos_bcrp,
+    obtener_datos_yfinance,
+)
 
 
 @pytest.fixture
@@ -332,3 +336,15 @@ def test_limpiar_datos_bcrp_missing_columns():
         match=r"Se requieren las columnas" " {'periodo', 'valor'}|{'valor', 'periodo'}",
     ):
         limpiar_datos_bcrp(invalid_df, False, False)
+
+
+def test_obtener_datos_yfinance_success():
+    """Test para obtener_datos_yfinance con respuesta exitosa."""
+    df = obtener_datos_yfinance(
+        ticker=["DIS", "AAPL"],
+        fecha_inicio=(datetime.today() - timedelta(days=7)).strftime("%Y-%m-%d"),
+        fecha_fin=datetime.today().strftime("%Y-%m-%d"),
+    )
+
+    assert df.shape[0] > 0
+    assert df.shape[1] == 2

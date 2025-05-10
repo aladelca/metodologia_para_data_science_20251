@@ -2,7 +2,7 @@
 import pandas as pd
 import pytest
 
-from pipeline.feature_engineering import get_lags
+from pipeline.feature_engineering import get_lags, get_rolling_mean
 
 
 @pytest.fixture
@@ -52,3 +52,26 @@ def test_get_lags_empty_df():
 
     # Check that the result is empty
     assert result_empty.empty, "Result should be empty"
+
+
+def test_get_rolling_mean(sample_data):
+    """Test the get_rolling_mean function."""
+    # Mock the DataFrame
+    df = sample_data.copy()
+
+    # Call the function with n=2
+    result = get_rolling_mean(df, "value", "date", 2)
+
+    # Check the shape of the result
+    assert result.shape == (5, 3), "Shape of the result is incorrect"
+
+    # Check the rolling mean values
+    expected_rolling_mean = {
+        "date": pd.date_range(start="2023-01-01", periods=5, freq="D"),
+        "value": [1, 2, 3, 4, 5],
+        "rolling_mean_value": [None, 1.5, 2.5, 3.5, 4.5],
+    }
+
+    expected_df = pd.DataFrame(expected_rolling_mean)
+
+    pd.testing.assert_frame_equal(result, expected_df)

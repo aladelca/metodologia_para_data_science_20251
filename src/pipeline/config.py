@@ -32,3 +32,7 @@ EQUIVALENCIAS_MESES = {
 RUTA_AFP = str(DATA_DIR / "afp.csv")
 RUTA_TC = str(DATA_DIR / "tc.csv")
 RUTA_ORO = str(DATA_DIR / "oro.csv")
+
+RUTA_MODELOS = str(ROOT_DIR / "src/models")
+RUTA_DATOS = str(ROOT_DIR / "src/data/processed/sp500_stocks.csv")
+RUTA_SP500 = str(ROOT_DIR / "src/data/processed/sp500_index.csv")

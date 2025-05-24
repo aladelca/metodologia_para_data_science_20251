@@ -18,7 +18,7 @@ logger.setLevel(logging.INFO)
 s3_client = boto3.client("s3")
 
 MODELS_PREFIX = "models/"
-BUCKET_NAME = "s3://mis-acciones/models/"
+BUCKET_NAME = "mis-acciones"
 
 
 def load_model_from_s3(ticker: str) -> Prophet:

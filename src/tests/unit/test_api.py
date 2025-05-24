@@ -78,7 +78,6 @@ def test_train_endpoint(client, datos_prueba, directorio_temporal):
             "tick": "TSLA",
             "fecha_inicio": "2020-01-01",
             "fecha_corte": "2020-12-31",
-            "ruta": "",
         },
     )
 

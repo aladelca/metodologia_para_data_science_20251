@@ -73,10 +73,16 @@ def _fecha_diaria(fecha_str: str) -> datetime:
 def _fecha_mensual(fecha_str: str) -> datetime:
     """Convierte «Mmm.aaaa» (p. ej. ``'Mar.2025'``) a ``datetime``."""
     try:
-        mes_es = fecha_str[:3].upper()
-        anio = fecha_str[4:]
-        mes_en = EQUIVALENCIAS_MESES[mes_es]  # KeyError si no existe
-        return datetime.strptime(f"{mes_en} {anio}", "%b %Y")
+        try:
+            mes_es = fecha_str[:3].upper()
+            anio = fecha_str[4:]
+            mes_en = EQUIVALENCIAS_MESES[mes_es]  # KeyError si no existe
+            return datetime.strptime(f"{mes_en} {anio}", "%b %Y")
+        except ValueError:
+            mes_es = fecha_str[:3].upper()
+            anio = fecha_str[3:]
+            mes_en = EQUIVALENCIAS_MESES[mes_es]  # KeyError si no existe
+            return datetime.strptime(f"{mes_en}{anio}", "%b%y")
     except (KeyError, ValueError, IndexError) as exc:
         raise ValueError(f"Formato de fecha mensual no válido: {fecha_str}") from exc
 

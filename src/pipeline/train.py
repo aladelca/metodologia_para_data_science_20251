@@ -13,7 +13,15 @@ import pandas as pd
 from prophet import Prophet
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
-from pipeline.config import RUTA_DATOS, RUTA_SP500
+from src.pipeline.config import (
+    RUTA_AFP_HABITAT,
+    RUTA_AFP_INTEGRA,
+    RUTA_AFP_PRIMA,
+    RUTA_AFP_PROFUTURO,
+    RUTA_DATOS,
+    RUTA_SP500,
+)
+from src.pipeline.preprocesamiento import limpiar_datos_bcrp
 
 # Crear directorio de logs si no existe
 os.makedirs("logs", exist_ok=True)
@@ -54,7 +62,22 @@ def cargar_datos(tick: str, fecha_inicio: str, fecha_corte: str) -> pd.DataFrame
         df = df.drop(columns=["Date"])
         df = df.rename(columns={"S&P500": "y"})
         df = df[["fecha", "y"]]
-
+    elif tick in ["INTEGRA", "PRIMA", "HABITAT", "PROFUTURO"]:
+        equivalencias_afp = {
+            "INTEGRA": RUTA_AFP_INTEGRA,
+            "PRIMA": RUTA_AFP_PRIMA,
+            "HABITAT": RUTA_AFP_HABITAT,
+            "PROFUTURO": RUTA_AFP_PROFUTURO,
+        }
+        ruta_archivo = os.path.join(equivalencias_afp[tick])
+        df = pd.read_csv(
+            ruta_archivo, encoding="ISO-8859-1", skiprows=1, names=["periodo", "valor"]
+        )
+        df = df.dropna()
+        df = df[df["valor"] != "n.d."]
+        df = limpiar_datos_bcrp(df, True, False, None)
+        df = df[["periodo_limpio", "valor_limpio"]]
+        df = df.rename(columns={"periodo_limpio": "fecha", "valor_limpio": "y"})
     else:
         ruta_archivo = os.path.join(RUTA_DATOS)
         df = pd.read_csv(ruta_archivo)
@@ -73,19 +96,9 @@ def cargar_datos(tick: str, fecha_inicio: str, fecha_corte: str) -> pd.DataFrame
     fecha_max = df["fecha"].max()
 
     if pd.Timestamp(fecha_inicio) < pd.Timestamp(fecha_min):
-        logger.error(
-            f"Fecha de inicio {fecha_inicio} anterior a fecha disponible ({fecha_min})"
-        )
-        raise ValueError(
-            f"La fecha de inicio ({fecha_inicio}) es anterior a la fecha  ({fecha_min})"
-        )
+        df = df[df["fecha"] >= pd.Timestamp(fecha_inicio)]
     if pd.Timestamp(fecha_corte) > pd.Timestamp(fecha_max):
-        logger.error(
-            f"Fecha de corte ({fecha_corte}) posterior a fecha máxima ({fecha_max})"
-        )
-        raise ValueError(
-            f"La fecha de corte ({fecha_corte}) es posterior a la fecha ({fecha_max})"
-        )
+        df = df[df["fecha"] <= pd.Timestamp(fecha_corte)]
     if pd.Timestamp(fecha_inicio) > pd.Timestamp(fecha_corte):
         logger.error(
             f"Fecha inicio ({fecha_inicio}) posterior a fecha corte ({fecha_corte})"

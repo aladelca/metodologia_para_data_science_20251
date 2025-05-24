@@ -1,4 +1,5 @@
 """Config file para el preprocesamiento."""
+import os
 from pathlib import Path
 
 # Obtener la ruta absoluta del directorio del proyecto
@@ -41,5 +42,10 @@ RUTA_AFP_PRIMA = str(ROOT_DIR / "src/data/raw/Mensuales-20250520-184341.csv")
 RUTA_AFP_HABITAT = str(ROOT_DIR / "src/data/raw/Mensuales-20250520-184349.csv")
 RUTA_AFP_PROFUTURO = str(ROOT_DIR / "src/data/raw/Mensuales-20250520-184401.csv")
 
-MIN_DATE = "2015-01-01"
-MAX_DATE = "2024-12-01"
+# Configuración de S3
+BUCKET_NAME = os.environ.get("MODELS_BUCKET_NAME", "your-models-bucket")
+MODELS_PREFIX = "models/"
+
+# Configuración de fechas
+MIN_DATE = "2020-01-01"
+MAX_DATE = "2024-12-31"

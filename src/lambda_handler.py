@@ -1,12 +1,14 @@
 """Lambda handler para hacer predicciones con modelos almacenados en S3."""
 
 # Standard library imports
+import io
 import json
 import logging
 from datetime import datetime
 
 # Third-party imports
 import boto3
+import joblib
 import pandas as pd
 from prophet import Prophet
 
@@ -17,19 +19,19 @@ logger.setLevel(logging.INFO)
 # Configuración de S3
 s3_client = boto3.client("s3")
 
-MODELS_PREFIX = "models/"
+MODELS_PREFIX = "models/prophet_"
 BUCKET_NAME = "mis-acciones"
 
 
 def load_model_from_s3(ticker: str) -> Prophet:
     """Carga un modelo desde S3."""
     try:
-        model_path = f"{MODELS_PREFIX}{ticker}_model.json"
+        model_path = f"{MODELS_PREFIX}{ticker}_model.joblib"
         response = s3_client.get_object(Bucket=BUCKET_NAME, Key=model_path)
-        model_json = json.loads(response["Body"].read().decode("utf-8"))
+        model_bytes = response["Body"].read()
 
-        model = Prophet()
-        model.from_dict(model_json)
+        # Cargar el modelo desde los bytes usando joblib
+        model = joblib.load(io.BytesIO(model_bytes))
         return model
     except Exception as e:
         logger.error(f"Error cargando modelo para {ticker}: {str(e)}")

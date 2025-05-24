@@ -10,15 +10,15 @@ import boto3
 import pandas as pd
 from prophet import Prophet
 
-# Local imports
-from pipeline.config import BUCKET_NAME, MODELS_PREFIX
-
 # Configuración de logging
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 # Configuración de S3
 s3_client = boto3.client("s3")
+
+MODELS_PREFIX = "models/"
+BUCKET_NAME = "s3://mis-acciones/models/"
 
 
 def load_model_from_s3(ticker: str) -> Prophet:

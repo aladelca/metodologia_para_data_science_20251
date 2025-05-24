@@ -6,13 +6,11 @@ import sys
 
 import pandas as pd
 
-from src.pipeline.config import MAX_DATE, MIN_DATE, RUTA_DATOS
-from src.pipeline.train import cargar_datos, entrenar_prophet
-
-# Add the project root directory to Python path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 sys.path.append(project_root)
 
+from src.pipeline.config import MAX_DATE, MIN_DATE, RUTA_DATOS  # noqa
+from src.pipeline.train import cargar_datos, entrenar_prophet  # noqa
 
 logging.basicConfig(
     level=logging.INFO,
@@ -26,9 +24,13 @@ def main_train_models():
     """Entrenar los modelos para todos los tickers."""
 
     def _get_all_tickers():
-        return list(pd.read_csv(RUTA_DATOS)["Symbol"].unique())
-
-    +["S&P500", "INTEGRA", "PRIMA", "HABITAT", "PROFUTURO"]
+        return list(pd.read_csv(RUTA_DATOS)["Symbol"].unique()) + [
+            "S&P500",
+            "INTEGRA",
+            "PRIMA",
+            "HABITAT",
+            "PROFUTURO",
+        ]
 
     tickers = _get_all_tickers()
     for ticker in tickers:
